@@ -1,0 +1,12 @@
+node_modules/
+.env
+cache/
+artifacts/
+coverage/
+typechain-types/
+
+# Mapa off-chain RA→nome (dados pessoais — nunca commitar)
+dados-locais.json
+
+# Claude Code
+.claude/

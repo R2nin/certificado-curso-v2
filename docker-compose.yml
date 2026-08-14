@@ -1,0 +1,59 @@
+# CertificadoCurso v2 — Docker Compose
+#
+# Serviços disponíveis:
+#
+#   docker compose run --rm test    → suite de 12 testes + relatório de gas
+#   docker compose run --rm demo    → deploy + demonstração completa (rede interna)
+#   docker compose up node          → nó local da blockchain em localhost:8545
+#
+# Para scripts interativos contra o nó local:
+#   npx hardhat console --network localhost
+#   CURSO_ID=1 ... npx hardhat run scripts/registrar-presenca.js --network localhost
+
+services:
+
+  # ------------------------------------------------------------------ #
+  # test — suite de 12 testes com relatório de gas                      #
+  # ------------------------------------------------------------------ #
+  test:
+    build: .
+    environment:
+      SOLC_LOCAL: "1"
+
+  # ------------------------------------------------------------------ #
+  # demo — deploy + fluxo completo na rede Hardhat in-process           #
+  # (sem dependências externas, sem carteira, sem ETH de faucet)        #
+  # ------------------------------------------------------------------ #
+  demo:
+    build: .
+    command: npx hardhat run scripts/deploy.js
+    environment:
+      SOLC_LOCAL: "1"
+
+  # ------------------------------------------------------------------ #
+  # node — nó local da blockchain (RPC JSON em localhost:8545)          #
+  # Use para rodar scripts interativos ou o Hardhat Console              #
+  # ------------------------------------------------------------------ #
+  node:
+    build: .
+    command: npx hardhat node --hostname 0.0.0.0
+    ports:
+      - "8545:8545"
+    environment:
+      SOLC_LOCAL: "1"
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -sf
+        - -X
+        - POST
+        - -H
+        - "Content-Type: application/json"
+        - --data
+        - '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+        - http://localhost:8545
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
