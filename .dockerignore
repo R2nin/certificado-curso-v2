@@ -1,0 +1,9 @@
+node_modules/
+.env
+cache/
+artifacts/
+coverage/
+typechain-types/
+.git/
+.claude/
+dados-locais.json
